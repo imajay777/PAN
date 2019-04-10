@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: PAN
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: gsaja
+Implementation-Vendor-Id: com.pan
+Build-Jdk: 1.8.0_111
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
+ ot-starter-parent/PAN
+Created-By: Maven Integration for Eclipse
+
