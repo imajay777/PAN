@@ -47,6 +47,7 @@ public class CompanyDaoImpl implements CompanyDao{
 		List<?> querylist = query.getResultList();
 		for (Iterator<?> iterator = querylist.iterator(); iterator.hasNext();) {
 			int cid = (int)(Integer) iterator.next();
+			//for jenkins used that Integer
 			list.add(cid);
 		}
 		return list;
