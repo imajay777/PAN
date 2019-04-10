@@ -46,7 +46,7 @@ public class CompanyDaoImpl implements CompanyDao{
 		List<Integer> list = new ArrayList<Integer>();
 		List<?> querylist = query.getResultList();
 		for (Iterator<?> iterator = querylist.iterator(); iterator.hasNext();) {
-			int cid = (int) iterator.next();
+			int cid = (int)(Integer) iterator.next();
 			list.add(cid);
 		}
 		return list;

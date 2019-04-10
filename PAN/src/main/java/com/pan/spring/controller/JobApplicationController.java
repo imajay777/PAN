@@ -166,7 +166,7 @@ public class JobApplicationController {
 		List<Integer> list = new ArrayList<Integer>();
 		List<?> querylist = query.getResultList();
 		for (Iterator<?> iterator = querylist.iterator(); iterator.hasNext();) {
-			int uid = (int) iterator.next();
+			int uid = (int) (Integer) iterator.next();
 			list.add(uid);
 			System.out.println(uid);
 		}
