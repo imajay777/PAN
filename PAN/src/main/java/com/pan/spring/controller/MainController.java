@@ -29,10 +29,6 @@ public class MainController {
 	public String showRegisterPage() {
 		return "register";
 	}
-	@RequestMapping(value = "/chill")
-	public String chill() {
-		return "Heya! I'm Captain Chill";
-	}
 	@Autowired
 	JobSeekerDao jobSeekerDao;
 	
