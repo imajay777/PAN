@@ -62,6 +62,7 @@ public class CompanyDaoImpl implements CompanyDao{
 		}
 		return c;
 	}
+	
 
 	@Override
 	public Company getCompany(int id) {
