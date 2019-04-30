@@ -3,6 +3,8 @@
  */
 package com.pan.spring.dao;
 
+import java.util.List;
+
 import com.pan.spring.entity.JobApplication;
 
 
@@ -17,7 +19,7 @@ public interface JobApplicationDao {
 	
 	JobApplication getJobApplication(int jobAppId);
 
-	
+	List<?> getseeker(int jobId);
 	JobApplication modifyJobApplicationStatus(int jobAppId, int state);
 	
 	

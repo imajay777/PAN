@@ -1020,7 +1020,7 @@ a.stp-back-totop {
 					<div class="col-sm-6">
 					<c:if test="${applied == 0}">
 							<button class="btn btn-lg btn-block btn-success"
-								>apply
+								onclick="document.getElementById('id01').style.display='block'">apply
 								for this job</button>
 						</c:if>
 						<c:if test="${applied == 1}">
@@ -1033,7 +1033,26 @@ a.stp-back-totop {
 
 					</div>
 				</div>
+				<div id="id01" class="modal">
 
+					<form class="modal-content animate" action="/application/apply" method="post" enctype="multipart/form-data">
+						<div class="container-fluid">
+							<div class="col-sm-6 dropdown form-group">
+									<div>
+										<label>Apply with?</label> <label
+											class="btn btn-default"><input type="radio"
+											name="resumeFlag" value="0"
+											autocomplete="off"
+											>
+											Your Profile </label> 
+											<label class="btn btn-default"> <input
+											type="radio" name="resumeFlag" value="1"
+											autocomplete="off" disabled > Profile + Resume
+    										<input type="file" name="file" disabled /><br/><br/>
+
+										</label>
+
+									</div>
 		
 				
 

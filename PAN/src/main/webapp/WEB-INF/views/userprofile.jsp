@@ -913,7 +913,7 @@ a.stp-back-totop {
 						</form>
 					</div>
 					<div class="col-sm-6">
-						<form action="#" method="get">
+						<form action="/getinterestedjobs" method="get">
 						
 							<input type="hidden" name="jobSeekerId" value="${seeker.jobseekerId}"></input>
 							<input type="submit" class="btn btn-lg btn-block btn-success"

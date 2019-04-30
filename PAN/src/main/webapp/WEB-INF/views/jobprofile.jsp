@@ -913,12 +913,12 @@ a.stp-back-totop {
 	<header id="stp-header">
 		<div class="container">
 		<div class="row " style="margin: auto">
-					<form class="" action="#" method="get">
+					<form class="" action="/company/getapplicants" method="get">
 						<input type="hidden" name="jobId" value="${job.jobId}"></input>
 
 						<button type="submit" class="btn btn-block btn-primary">View all job applicants for this job</button>
 					</form>
-
+ 
 
 				</div>
 			<div class="row">
@@ -964,7 +964,7 @@ a.stp-back-totop {
 			</div>
 			
 			<div class="col-sm-4">
-				<form action="#">
+				<form action="/JobPosting/update/${job.jobId}">
 				<input type="hidden" value="${company.companyId}" name="cid">
 				<input type="submit" value="Update job" class="btn btn-default btn-block">
 				</form>
@@ -1001,7 +1001,7 @@ a.stp-back-totop {
 						</div>
 						</div>
 						<div class="col-sm-3">
-							<form action="#">
+							<form action="/JobPosting/delete/${job.jobId }">
 							<input type="submit" class="btn btn-danger btn-block" value="Delete Job">
 								
 							</form>

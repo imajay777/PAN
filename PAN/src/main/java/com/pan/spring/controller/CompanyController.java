@@ -17,6 +17,9 @@ import com.pan.spring.dao.JobPostingDao;
 import com.pan.spring.dao.JobSeekerDao;
 import com.pan.spring.entity.Company;
 import com.pan.spring.entity.JobPosting;
+import com.pan.spring.entity.JobApplication;
+import com.pan.spring.dao.JobApplicationDao;
+
 
 @Controller
 @RequestMapping("/company")
@@ -27,6 +30,8 @@ public class CompanyController {
 	
 	@Autowired
 	JobPostingDao jobDao;
+	@Autowired
+	JobApplicationDao jobAppDao;
 	
 	@Autowired
 	InterestedDao interestedDao;
@@ -60,7 +65,19 @@ public class CompanyController {
 		
 		JobPosting p1 = jobDao.getJobPosting(Integer.parseInt(jobId));
 		model.addAttribute("job", p1);
-		return "jobprofile";
+		return "jobapplicants";
+	}
+	
+	@RequestMapping(value = "/getapplicants", method = RequestMethod.GET)
+	public String getJobApplicants(@RequestParam("jobId") String jobId, Model model) {
+		
+		List<?> seekerid = new ArrayList<String>();
+		seekerid = jobAppDao.getseeker(Integer.parseInt(jobId));
+		
+		
+		model.addAttribute("jobs", seekerid);
+	
+		return "jobapplicants";
 	}
 	
 	/**

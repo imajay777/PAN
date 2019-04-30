@@ -1,5 +1,6 @@
 package com.pan.spring.dao.impl;
 
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -137,11 +138,27 @@ public class JobSeekerDaoImpl implements JobSeekerDao {
 	
 	@Override
 	public List<?> searchJobs(String searchString) {
-		searchString =searchString;
-		
-		String selectQuery = "SELECT jobId FROM JobPostingsView ";
-	
+
+		searchString = "%" + searchString + "%";
+		searchString = searchString.replaceAll(" ", "% %");
+		String searchStringArray[] = searchString.split(" ");
+		String selectQuery = "SELECT jobId FROM JobPostingsView jp";
+		if (!searchString.isEmpty()) {
+			selectQuery = selectQuery.concat(" WHERE ");
+		}
+
+		for (int i = 0; i < searchStringArray.length; i++) {
+			selectQuery = selectQuery.concat("jp.keywords LIKE :searchParam" + i);
+			if (i != searchStringArray.length - 1) {
+				selectQuery = selectQuery.concat(" AND ");
+			}
+		}
+
 		Query query = entityManager.createQuery(selectQuery);
+		for (int i = 0; i < searchStringArray.length; i++) {
+			query.setParameter("searchParam" + i, searchStringArray[i]);
+		}
+
 		List<?> list = query.getResultList();
 		try {
 		} catch (Exception e) {

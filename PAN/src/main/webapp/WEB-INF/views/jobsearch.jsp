@@ -242,7 +242,7 @@ body {
 					</a>
 						<ul class="dropdown-menu">
 							<li><a href="/userprofile/${seeker.jobseekerId}">Profile</a></li>
-							<li><a href="/findjobs">Logout</a></li>
+							<li><a href="/Placed@NU">Logout</a></li>
 						</ul></li>
 				</ul>
 			</div>

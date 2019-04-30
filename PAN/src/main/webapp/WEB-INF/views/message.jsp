@@ -31,7 +31,7 @@
 		<nav class="navbar navbar-inverse navbar-fixed-top">
 			<div class="container-fluid">
 				<div class="navbar-header">
-					<a class="navbar-brand" href="/placenu">Placed@NU</a>
+					<a class="navbar-brand" href="/Placed@NU">Placed@NU</a>
 				</div>
 				<ul class="nav navbar-nav navbar-right">
 					

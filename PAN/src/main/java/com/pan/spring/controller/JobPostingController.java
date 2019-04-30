@@ -3,6 +3,7 @@ package com.pan.spring.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -62,7 +63,7 @@ public class JobPostingController {
 			
 
 			JobPosting p1 = jobDao.createJobPosting(j, Integer.parseInt(cid));
-			System.out.println("ashay");
+			
 
 			model.addAttribute("job", p1);
 			Company company = companyDao.getCompany(Integer.parseInt(cid));
@@ -74,6 +75,66 @@ public class JobPostingController {
 			return "error";
 		}
 
+	}
+	@RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
+	public String deleteJobPosting(@PathVariable("id") int id, Model model) {
+
+		if (jobDao.deleteJobPosting(id)) {
+			String message = "Job Posting with JobID " + id + " is deleted successfully";
+			model.addAttribute("message", message);
+			return "message";
+		} else {
+			return "error";
+		}
+	}
+
+	@RequestMapping(value = "/update/{id}",method = RequestMethod.GET)
+	public String showUpdatePage(@PathVariable("id") int id, @RequestParam("cid") String cid, Model model) {
+		System.out.println(cid);
+		System.out.println(id);
+		
+		Company company = companyDao.getCompany(Integer.parseInt(cid));
+		JobPosting jp = jobDao.getJobPosting(id);
+		model.addAttribute("job", jp);
+		model.addAttribute("company", company);
+		return "updatejob";
+	}
+
+	@RequestMapping(value = "/update/{id}", method = RequestMethod.POST)
+	public String updateJobPosting(@PathVariable("id") int id, @RequestParam("state") String state,
+			@RequestParam("title") String title, @RequestParam("description") String description,
+			@RequestParam("responsibilities") String responsibilities, @RequestParam("location") String location,
+			@RequestParam("salary") String salary, @RequestParam("cid") String cid, Model model) {
+		// TODO routing
+		JobPosting job = jobDao.getJobPosting(id);
+		if (job != null) {
+			job.setjobId(id);
+			job.setDescription(description);
+			job.setState(Integer.parseInt(state));
+			job.setTitle(title);
+			job.setLocation(location);
+			job.setResponsibilities(responsibilities);
+			JobPosting p1 = jobDao.updateJobPosting(job);
+
+			model.addAttribute("job", p1);
+			Company company = companyDao.getCompany(Integer.parseInt(cid));
+			model.addAttribute("company", company);
+			return "jobprofile";
+		}
+		return "error";
+
+	}
+	
+	
+	@RequestMapping(value = "/modifyjobstate", method = RequestMethod.POST)
+	public String modifyJobState(@RequestParam("jobId") String jobId, @RequestParam("state") String state) {
+		JobPosting jp = jobDao.getJobPosting(Integer.parseInt(jobId));
+		jp.setState(Integer.parseInt(state));
+		jp = jobDao.updateJobPosting(jp);
+		if(jp==null){
+			return "Error";
+		}
+		return "modified";
 	}
 
 	

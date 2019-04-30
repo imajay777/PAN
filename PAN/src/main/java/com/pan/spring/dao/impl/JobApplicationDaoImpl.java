@@ -1,7 +1,10 @@
 package com.pan.spring.dao.impl;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,6 +57,19 @@ public class JobApplicationDaoImpl implements JobApplicationDao{
 			e.printStackTrace();
 		}
 		return ja;
+	}
+	public List<?> getseeker(int jobId) {
+		
+		Query one=entityManager.createQuery("SELECT JobSeeker.firstName, JobSeeker.workEx,JobSeeker.highestEducation,JobSeeker.skills	 FROM JobApplication ja WHERE ja.JobPosting.jobId = :jobId");
+		one.setParameter("jobId", jobId);
+		List<?> querylist1 = one.getResultList();
+		
+		
+		
+		/*Query query = entityManager.createQuery("SELECT firstname,workEx,highestEducation,skills FROM jobseeker WHERE ");
+		query.setParameter("jobId", jobId);
+		List<?> querylist = query.getResultList();*/
+		return querylist1;
 	}
 
 	

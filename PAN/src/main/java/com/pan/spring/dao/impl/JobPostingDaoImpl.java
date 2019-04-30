@@ -21,12 +21,12 @@ public class JobPostingDaoImpl implements JobPostingDao{
 	@Override
 	public JobPosting createJobPosting(JobPosting job, int cid) {
 		try {
-			System.out.println("1");
+			
 			Company c = entityManager.find(Company.class, cid);
 			job.setCompany(c);
-			System.out.println("2");
+			
 			entityManager.persist(job);
-			System.out.println("3");
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

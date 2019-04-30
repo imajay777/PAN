@@ -229,7 +229,7 @@ body {
 		<nav class="navbar navbar-inverse navbar-fixed-top">
 				<div class="container-fluid">
 					<div class="navbar-header">
-						<a class="navbar-brand" href="/placenu">Placed@NU</a>
+						<a class="navbar-brand" href="/Placed@NU">Placed@NU</a>
 					</div>
 					<ul class="nav navbar-nav navbar-right">
 						<li class="active"><a href="#team"></a></li>
@@ -240,7 +240,7 @@ body {
 						</a>
 							<ul class="dropdown-menu">
 								<li><a href="/company/profile/${company.companyId}">Profile</a></li>
-								<li><a href="/placenu">Logout</a></li>
+								<li><a href="/Placed@NU">Logout</a></li>
 							</ul></li>
 					</ul>
 				</div>
@@ -257,7 +257,7 @@ body {
 
 		
 		<div class="results">
-			<h2>${fn:length(jobs)} job Applicants for ${job.title}</h2>
+			<h2>${fn:length(jobs)} job Applicants for ${job.title}</h2>	
 
 			<c:forEach items="${jobs}" var="job">
 				<a class="a1" href="/company/showjob?cid=${company.companyId}&jobId=${job[0]}">${job[1]}</a>

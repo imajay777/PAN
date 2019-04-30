@@ -43,7 +43,7 @@
 			<div class="container text-center">
 
 				<h2>
-					<img src="http://qspear.com/admin/images/news_events_images/partner_news.png" height="80" width="auto">FindJobs.com
+					<img src="http://qspear.com/admin/images/news_events_images/partner_news.png" height="80" width="auto">Placed@NU
 				</h2>
 				<h2>Hi, ${name}</h2>
 				<h1>A verification code has been sent</h1>

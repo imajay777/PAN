@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -33,6 +34,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.pan.spring.entity.Company;
+import com.pan.spring.entity.JobPosting;
+import com.pan.spring.entity.JobSeeker;
 import com.pan.spring.dao.InterestedDao;
 import com.pan.spring.dao.JobApplicationDao;
 import com.pan.spring.dao.JobPostingDao;
@@ -76,6 +80,105 @@ public class JobApplicationController {
 	 * @param resumePath
 	 * @return The newly created application
 	 */
+	@RequestMapping(value = "/apply", method = RequestMethod.POST)
+	public String apply(@RequestParam("userId") String jobSeekerId, @RequestParam("jobId") String jobId,
+			@RequestParam("resumeFlag") boolean resumeFlag, @RequestParam("resumePath") String resumePath,
+			@RequestParam("file") Optional<MultipartFile> file, RedirectAttributes redirectAttributes, Model model) {
+		if (resumeFlag == true) {
+
+			System.out.println("In Job Contraoller");
+			if (file.equals(Optional.empty())) {
+				System.out.println("Inside Empty");
+				redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
+				return "redirect:uploadStatus";
+			}
+
+			try {
+				System.out.println("Inside Upload");
+				byte[] bytes = file.get().getBytes();
+				Path path = Paths.get(UPLOADED_FOLDER + file.get().getOriginalFilename());
+				JobApplication ja = new JobApplication();
+				ja = jobAppDao.apply(Integer.parseInt(jobSeekerId), Integer.parseInt(jobId), resumeFlag,
+						path.toString());// apply(Integer.parseInt(jobSeekerId),
+											// Integer.parseInt(jobId),
+											// resumeFlag, path);
+				JobSeeker js = jobSeekerDao.getJobSeeker(Integer.parseInt(jobSeekerId));
+				JobPosting jp = jobDao.getJobPosting(Integer.parseInt(jobId));
+				emailService.sendSimpleMessage(js.getEmailId(),
+						"You have successfully applied to the position " + jp.getTitle() + " at "
+								+ jp.getCompany().getCompanyName(),
+						"Hi " + js.getFirstName() + " " + js.getLastName()
+								+ ".\n You have successfully completed your application for " + jp.getTitle() + " at "
+								+ jp.getCompany().getCompanyName() + ".\n Regards,\n Placed@NU Team");
+
+				Company company = jp.getCompany();
+				List<?> ij = interestedDao.getAllInterestedJobId(Integer.parseInt(jobSeekerId));
+				int i = 0;
+				int j = 0;
+				if (ij.contains(Integer.parseInt(jobId))) {
+					i = 1;
+				}
+
+				List<Integer> il = getAppliedJobs(jobSeekerId);
+				if (il.contains(Integer.parseInt(jobId))) {
+					j = 1;
+				}
+
+				model.addAttribute("job", jp);
+				model.addAttribute("seeker", js);
+				model.addAttribute("company", company);
+				model.addAttribute("interested", i);
+				model.addAttribute("applied", j);
+				System.out.println(path);
+				Files.write(path, bytes);
+				System.out.println(path);
+				return "userjobprofile";
+
+				/// redirectAttributes.addFlashAttribute("message",
+				// "You successfully uploaded '" +
+				/// file.get().getOriginalFilename() + "'");
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			return "redirect:/userjobprofile";
+
+		} else {
+			JobApplication ja = new JobApplication();
+			ja = jobAppDao.apply(Integer.parseInt(jobSeekerId), Integer.parseInt(jobId), resumeFlag, resumePath);
+			JobSeeker js = jobSeekerDao.getJobSeeker(Integer.parseInt(jobSeekerId));
+			JobPosting jp = jobDao.getJobPosting(Integer.parseInt(jobId));
+			emailService.sendSimpleMessage(js.getEmailId(),
+					"You have successfully applied to the position " + jp.getTitle() + " at "
+							+ jp.getCompany().getCompanyName(),
+					"Hi " + js.getFirstName() + " " + js.getLastName()
+							+ ".\n You have successfully completed your application for " + jp.getTitle() + " at "
+							+ jp.getCompany().getCompanyName() + ".\n Regards,\nThe FindJobs Team");
+			Company company = jp.getCompany();
+			List<?> ij = interestedDao.getAllInterestedJobId(Integer.parseInt(jobSeekerId));
+			int i = 0, j = 0;
+			if (ij.contains(Integer.parseInt(jobId))) {
+				i = 1;
+			}
+
+			List<Integer> il = getAppliedJobs(jobSeekerId);
+			if (il.contains(Integer.parseInt(jobId))) {
+				j = 1;
+			}
+
+			model.addAttribute("job", jp);
+			model.addAttribute("seeker", js);
+			model.addAttribute("company", company);
+			model.addAttribute("interested", i);
+			model.addAttribute("applied", j);
+
+			return "userjobprofile";
+
+		}
+
+	}
+
 
 
 	/**

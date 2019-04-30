@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.pan.spring.entity.Interested;
 import com.pan.spring.dao.CompanyDao;
 import com.pan.spring.dao.InterestedDao;
 import com.pan.spring.dao.JobPostingDao;
@@ -60,11 +61,31 @@ public class JobSeekerController {
 	 */
 	@RequestMapping(value = "/searchjobs", method = RequestMethod.GET)
 	public String searchJobs(@RequestParam("userId") String userId,
-			 Model model) {
+			@RequestParam("searchString") Optional<String> searchString,
+			@RequestParam("locations") Optional<String> locations,
+			@RequestParam("companies") Optional<String> companies, 
+			@RequestParam("min") Optional<String> min,
+			@RequestParam("max") Optional<String> max, Model model) {
 		JobPostingsView jpv = new JobPostingsView();
 		String search = "";
+		if (!searchString.equals(Optional.empty())) {
+			search = searchString.get();
+		}
 		
 		List<?> jobIds = jobSeekerDao.searchJobs(search);
+		if ((!locations.equals(Optional.empty())) && (locations.get()!="")) {
+			System.out.println("location");
+			jpv.setLocation(locations.get());
+		}
+		if (!companies.equals(Optional.empty()) && companies.get()!="") {
+			System.out.println("comp");
+			jpv.setCompanyName(companies.get());
+		}
+		if (!min.equals(Optional.empty()) && !max.equals(Optional.empty())) {
+		String salary = min.get()+","+max.get();
+		jpv.setSalary(salary);
+		}
+
 		List<?> jp = jobSeekerDao.filterJobs(jpv, jobIds);
 
 		JobSeeker jobseeker = jobSeekerDao.getJobSeeker(Integer.parseInt(userId));
@@ -74,6 +95,7 @@ public class JobSeekerController {
 		
 		return "jobsearch";
 	}
+
 
 	@Autowired
 	CompanyDao companyDao;
@@ -143,7 +165,7 @@ public class JobSeekerController {
 
 				JobSeeker j1 = jobSeekerDao.createJobSeeker(j);
 
-				String verificationUrl = "http://localhost:8080/register/verify?userId=" + j1.getJobseekerId() + "&pin="
+				String verificationUrl = "http://localhost:6060/register/verify?userId=" + j1.getJobseekerId() + "&pin="
 						+ randomPIN + "&type=seeker";
 
 				emailService.sendSimpleMessage(email, "Verification Pin", verificationUrl);
@@ -164,7 +186,7 @@ public class JobSeekerController {
 
 				Company c1 = companyDao.createCompany(c);
 
-				String verificationUrl = "http://localhost:8080/register/verify?userId=" + c1.getCompanyId() + "&pin="
+				String verificationUrl = "http://localhost:6060/register/verify?userId=" + c1.getCompanyId() + "&pin="
 						+ randomPIN + "&type=recruiter";
 
 				emailService.sendSimpleMessage(email, "Verification Pin", verificationUrl);
@@ -345,6 +367,122 @@ public class JobSeekerController {
 		return "companyprofile";
 
 	}
+	@RequestMapping(value = "/interested", method = RequestMethod.POST)
+	public String createInterest(@RequestParam("userId") String userId, @RequestParam("jobId") String jobId, Model model) {
+
+		try {
+			Interested in = new Interested();
+			in.setJobId(Integer.parseInt(jobId));
+			in.setJobSeekerId(Integer.parseInt(userId));
+			Interested i1 = interestedDao.createInterest(in);
+			
+		} catch (Exception e) {
+
+			HttpHeaders httpHeaders = new HttpHeaders();
+
+			Map<String, Object> message = new HashMap<String, Object>();
+			Map<String, Object> response = new HashMap<String, Object>();
+			message.put("code", "400");
+			message.put("msg", "Error Occured");
+			response.put("BadRequest", message);
+			JSONObject json_test = new JSONObject(response);
+			String json_resp = json_test.toString();
+
+			httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+			return "error";
+
+		}
+		JobPosting job = jobDao.getJobPosting(Integer.parseInt(jobId));
+		Company company = job.getCompany();
+		JobSeeker seeker = jobSeekerDao.getJobSeeker(Integer.parseInt(userId));
+		List<?> ij = interestedDao.getAllInterestedJobId(Integer.parseInt(userId));
+		int i = 0, j = 0;
+		if(ij.contains(Integer.parseInt(jobId))){
+			i = 1;
+		}
+		String message="<div class=\"alert alert-success\">This job has been <strong>Successfully added</strong> to your interests</div>";
+		
+		List<Integer> il = getAppliedJobs(userId);
+		if(il.contains(Integer.parseInt(jobId))){
+			j = 1;
+		}
+		
+		model.addAttribute("job", job);
+		model.addAttribute("seeker", seeker);
+		model.addAttribute("company", company);
+		model.addAttribute("interested", i);
+		model.addAttribute("message", message);
+		model.addAttribute("applied", j);
+		
+		
+		return "userjobprofile";
+	}
+
+	
+	@RequestMapping(value = "/interested/delete", method = RequestMethod.POST)
+	public String deleteInterest(@RequestParam("userId") String userId, @RequestParam("jobId") String jobId, Model model) {
+
+		try {
+			List<?> querylist = interestedDao.getInterestedJobId(Integer.parseInt(jobId), Integer.parseInt(userId));
+			boolean interestDeleted = interestedDao.deleteInterest(Integer.parseInt(querylist.get(0).toString()));
+			if (interestDeleted) {
+				JobPosting job = jobDao.getJobPosting(Integer.parseInt(jobId));
+				Company company = job.getCompany();
+				JobSeeker seeker = jobSeekerDao.getJobSeeker(Integer.parseInt(userId));
+				List<?> ij = interestedDao.getAllInterestedJobId(Integer.parseInt(userId));
+				int i = 0;
+				if(ij.contains(Integer.parseInt(jobId))){
+					i = 1;
+				}
+
+				String message="<div class=\"alert alert-danger\">This job has been <strong>Successfully removed</strong> from your interests</div>";
+				
+				model.addAttribute("job", job);
+				model.addAttribute("seeker", seeker);
+				model.addAttribute("company", company);
+				model.addAttribute("interested", i);
+				model.addAttribute("message", message);
+				model.addAttribute("applied", 1);
+				
+				
+				return "userjobprofile";
+
+			} else {
+				return "error";
+			}
+
+		} catch (Exception e) {
+
+			HttpHeaders httpHeaders = new HttpHeaders();
+
+			Map<String, Object> message = new HashMap<String, Object>();
+			Map<String, Object> response = new HashMap<String, Object>();
+			message.put("code", "400");
+			message.put("msg", "Error Occured");
+			response.put("BadRequest", message);
+			JSONObject json_test = new JSONObject(response);
+			String json_resp = json_test.toString();
+
+			httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+			return "error";
+
+		}
+
+	}
+
+	
+	@RequestMapping(value = "/getinterestedjobs", method = RequestMethod.GET)
+	public String getInterestedJobsForJobSeeker(@RequestParam("jobSeekerId") String jobSeekerId, Model model) {
+		
+		JobSeeker jobseeker = jobSeekerDao.getJobSeeker(Integer.parseInt(jobSeekerId));
+		List<?> jobSeekerInterestsList = jobSeekerDao.getJobSeeker(Integer.parseInt(jobSeekerId)).getInterestedjobs();
+		
+		model.addAttribute("jobs", jobSeekerInterestsList);
+		model.addAttribute("seeker", jobseeker);
+		return "interestedjobs";
+	}
+	
+
 
 	
 	@RequestMapping(value="/getappliedjobs", method = RequestMethod.GET)
